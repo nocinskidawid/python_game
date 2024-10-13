@@ -13,6 +13,7 @@ class Ship:
         #loading ship image
         self.image = pygame.image.load('images/ship.bmp')
         self.rect = self.image.get_rect()
+        
 
         #ship appearing at the bottom of the screen
         self.rect.midbottom = self.screen_rect.midbottom
@@ -37,3 +38,7 @@ class Ship:
     def biltme(self):
         """ship displaying in its actual position"""
         self.screen.blit(self.image, self.rect)
+
+    def center_ship(self):
+        self.rect.midbottom=self.screen_rect.midbottom
+        self.x=float(self.rect.x)
