@@ -7,6 +7,7 @@ from ship import Ship
 from bullet import Bullet
 from alien import Alien
 from game_stats import GameStats
+from button import Button
 
 class AlienInvasion:
     """main class to run the game and manage resources"""
@@ -40,6 +41,9 @@ class AlienInvasion:
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
 
+        #crating start button
+        self.play_button=Button(self,self.screen,'play')
+
         #bullet group
         self.bullets = pygame.sprite.Group()
 
@@ -52,7 +56,29 @@ class AlienInvasion:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
 
+    def _check_play_button(self, mouse_pos):
+        """starting new game after clicking play button"""
+        if self.play_button.rect.collidepoint(mouse_pos) and not self.stats.game_active:
+            self._start_game()
+            
+
+    def _start_game(self):
+        self.stats.reset_stats()
+        self.stats.game_active = True
+
+        self.aliens.empty()
+        self.bullets.empty()
+
+        self._create_fleet()
+        self.ship.center_ship()
+
+        self.settings.initialize_dynamic_settings()
+
+        pygame.mouse.set_visible(False)
 
     def _check_keydown_events(self, event):
         """method to deal with keydown events"""
@@ -64,6 +90,8 @@ class AlienInvasion:
             self._fire_bullet()
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_RETURN:
+            self._start_game()
 
     def _check_keyup_events(self, event):
         """method to deal with keyup events"""
@@ -93,6 +121,7 @@ class AlienInvasion:
             #creating new fleet
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _update_screen(self):
         self.screen.fill(self.bg_color)
@@ -104,6 +133,10 @@ class AlienInvasion:
 
         #displaying aliens
         self.aliens.draw(self.screen)
+
+        #displaying start button if game is inactive
+        if not self.stats.game_active:
+            self.play_button.draw_button()
 
         # screen refreshing in every frame
         pygame.display.flip()
@@ -173,6 +206,7 @@ class AlienInvasion:
         else:
             self.stats.game_active=False
             ##sys.exit()
+            pygame.mouse.set_visible(True)
 
 
     def _check_alien_bottom(self):
