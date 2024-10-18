@@ -19,6 +19,8 @@ class Alien(Sprite):
 
         #alien x position
         self.x = float(self.rect.x)
+        
+        #self.y = float(self.rect.y - 100)
 
     def update(self):
         """aliens movement"""

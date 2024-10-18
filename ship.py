@@ -1,19 +1,25 @@
 import pygame
+from pygame.sprite import Sprite
 
 from settings import Settings
 
-class Ship:
-    def __init__(self, ai_game):
-        """class to manage ship controlled by player"""
+class Ship(Sprite):
+    def __init__(self, ai_game, size):
+        """class to manage ship controlled by player size 1 - big 0 - small"""
+        super().__init__()
+        
         self.settings = Settings()
 
         self.screen = ai_game.screen
         self.screen_rect = ai_game.screen.get_rect()
 
         #loading ship image
-        self.image = pygame.image.load('images/ship.bmp')
-        self.rect = self.image.get_rect()
-        
+        if size == 1:
+            self.image = pygame.image.load('images/ship.bmp')
+            self.rect = self.image.get_rect()
+        elif size == 0:
+            self.image = pygame.image.load('images/ship_small.bmp')
+            self.rect = self.image.get_rect()
 
         #ship appearing at the bottom of the screen
         self.rect.midbottom = self.screen_rect.midbottom

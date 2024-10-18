@@ -37,7 +37,7 @@ class AlienInvasion:
         self.sb = Scoreboard(self)
 
         #creating player ship instance
-        self.ship = Ship(self)
+        self.ship = Ship(self, 1)
 
         #creating alien fleet
         self.aliens = pygame.sprite.Group()
@@ -72,6 +72,7 @@ class AlienInvasion:
         self.stats.game_active = True
 
         self.sb.prep_score()
+        self.sb.prep_ships()
 
         self.aliens.empty()
         self.bullets.empty()
@@ -92,6 +93,9 @@ class AlienInvasion:
         elif event.key == pygame.K_UP:
             self._fire_bullet()
         elif event.key == pygame.K_q:
+            file = open("high_score.txt", "w")
+            file.write(str(self.stats.high_score))
+            file.close()
             sys.exit()
         elif event.key == pygame.K_RETURN:
             self._start_game()
@@ -124,6 +128,7 @@ class AlienInvasion:
             for aliens in colisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
+            self.sb.check_high_score()
 
         if not self.aliens:
             #creating new fleet
@@ -169,7 +174,7 @@ class AlienInvasion:
 
         #number of aliens rows
         ship_height = self.ship.rect.height
-        avaliable_space_y = (self.settings.screen_height - (3*alien_width) - ship_height)
+        avaliable_space_y = (self.settings.screen_height - (4*alien_width) - ship_height)
         number_rows = avaliable_space_y // (2*alien_height)
 
         #creating alien fleet
@@ -183,7 +188,8 @@ class AlienInvasion:
         alien_width=alien.rect.width
         alien.x = alien_width+2*alien_width*alien_number
         alien.rect.x=alien.x
-        alien.rect.y=alien.rect.height+2*alien.rect.height*row_number
+        #alien.rect.y=alien.y
+        alien.rect.y=alien.rect.height+2*alien.rect.height*row_number+25
         self.aliens.add(alien)
 
     def _update_aliens(self):
@@ -204,6 +210,7 @@ class AlienInvasion:
 
             #changing ships_left after hit
             self.stats.ships_left-=1
+            self.sb.prep_ships()
 
             #deleting items in lists
             self.aliens.empty()
@@ -216,9 +223,11 @@ class AlienInvasion:
             sleep(0.5)
         else:
             self.stats.game_active=False
+            file = open("high_score.txt", "w")
+            file.write(str(self.stats.high_score))
+            file.close()
             ##sys.exit()
             pygame.mouse.set_visible(True)
-
 
     def _check_alien_bottom(self):
         """if alien gets to screen bottom"""
